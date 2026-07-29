@@ -228,10 +228,9 @@ export default function NoticiaPage({ noticia, sidebarNews, currentDate }) {
   };
 
   const shareOnWhatsApp = () => {
-    const url = encodeURIComponent(`${SITE_URL}/noticia/${cat}/${id}`);
-    const title = encodeURIComponent(noticia.title);
-    window.open(`https://wa.me/?text=${title}%20${url}`, '_blank');
-  };
+  const url = encodeURIComponent(`${SITE_URL}/noticia/${cat}/${id}`);
+  window.open(`https://wa.me/?text=${url}`, '_blank');
+};
 
   const shareOnFacebook = () => {
     const url = encodeURIComponent(`${SITE_URL}/noticia/${cat}/${id}`);
