@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -124,7 +125,16 @@ export default function Layout({ children, currentDate }) {
               </svg>
             </button>
             <Link href="/" legacyBehavior>
-              <a><img src="/logo.png" alt="UG Noticias Mineras" className="h-12" /></a>
+              <Link href="/" className="flex items-center">
+  <Image
+    src="/logo.png"
+    alt="UG Noticias Mineras"
+    width={160}
+    height={48}
+    priority
+    className="h-12 w-auto"
+  />
+</Link>
             </Link>
           </div>
           <div className="flex items-center space-x-3">
