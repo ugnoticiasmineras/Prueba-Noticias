@@ -149,11 +149,9 @@ const getCategorySeoDescription = (categoryKey) => {
   }
 };
 
-const shareOnWhatsApp = (news, basePath) => {
-  const url = encodeURIComponent(`${SITE_URL}/noticia/${news.categoryKey}/${news.id}`);
-  const title = encodeURIComponent(news.title);
-  // ✅ CORREGIDO: Sin espacios extra en la URL
-  window.open(`https://wa.me/?text=${title}%20${url}`, '_blank');
+const shareOnWhatsApp = () => {
+  const url = encodeURIComponent(`${SITE_URL}/noticia/${cat}/${id}`);
+  window.open(`https://wa.me/?text=${url}`, '_blank');
 };
 
 const shareOnFacebook = (news, basePath) => {
