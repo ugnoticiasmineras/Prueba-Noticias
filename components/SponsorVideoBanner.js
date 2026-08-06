@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
- * ✅ SPONSORS EN VIDEO (NUEVO)
- * Fuente única de verdad para los 2 sponsors en video.
- * Para reemplazar un video: cambiar el archivo en /public/sponsors/
- * manteniendo el mismo nombre, o actualizar el campo "src" aquí.
- * Si en el futuro cada sponsor tiene un link propio, completar "url".
+ * ✅ SPONSORS EN VIDEO
+ * Fuente única de verdad para los sponsors en video.
+ * Para agregar/reemplazar un sponsor: cambiar el archivo en /public/sponsors/
+ * manteniendo el mismo nombre, o agregar entradas a SPONSOR_VIDEOS.
+ * La rotación secuencial funciona con cualquier cantidad de sponsors:
+ * cuando un video termina arranca el siguiente y al llegar al último vuelve al primero.
  */
 const SPONSOR_VIDEOS = [
   {
@@ -24,22 +25,50 @@ const SPONSOR_VIDEOS = [
   },
 ];
 
-function SponsorVideo({ sponsor, heightClass }) {
-  const videoRef = useRef(null);
+/** Marca true cuando el elemento entra (o está por entrar) al viewport. */
+function useInView(ref, rootMargin = '200px') {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [rootMargin]);
+  return inView;
+}
 
-  // Reintenta reproducir si el navegador bloquea el autoplay inicial
+function SponsorVideo({ sponsor, heightClass, loop = true, onEnded }) {
+  const containerRef = useRef(null);
+  const videoRef = useRef(null);
+  const inView = useInView(containerRef);
+
+  // (Re)intenta reproducir cuando el video entra en pantalla o cambia de src
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    video.load();
     const playAttempt = video.play();
     if (playAttempt !== undefined) {
       playAttempt.catch(() => {
-        /* Autoplay bloqueado: el usuario podrá reproducir manualmente (controls quedan ocultos por diseño) */
+        /* Autoplay bloqueado: queda el poster visible */
       });
     }
-  }, []);
+  }, [inView, sponsor.src]);
 
-  const videoEl = (
+  const videoEl = inView ? (
     <video
       ref={videoRef}
       className={`w-full ${heightClass} object-contain bg-white dark:bg-gray-900`}
@@ -47,17 +76,29 @@ function SponsorVideo({ sponsor, heightClass }) {
       poster={sponsor.poster}
       autoPlay
       muted
-      loop
+      loop={loop}
+      onEnded={onEnded}
       playsInline
       preload="metadata"
       aria-label={`Video sponsor: ${sponsor.label}`}
     >
       Tu navegador no soporta la reproducción de video.
     </video>
+  ) : (
+    // Carga diferida: hasta acercarse al viewport se muestra solo el poster (liviano)
+    <img
+      src={sponsor.poster}
+      alt={sponsor.label}
+      loading="lazy"
+      className={`w-full ${heightClass} object-contain bg-white dark:bg-gray-900`}
+    />
   );
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-blue-100 dark:border-blue-900 shadow-sm">
+    <div
+      ref={containerRef}
+      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-blue-100 dark:border-blue-900 shadow-sm"
+    >
       {sponsor.url ? (
         <a href={sponsor.url} target="_blank" rel="noopener noreferrer sponsored" className="block">
           {videoEl}
@@ -70,15 +111,13 @@ function SponsorVideo({ sponsor, heightClass }) {
 }
 
 /**
- * Muestra los DOS sponsors en video AL MISMO TIEMPO, uno junto al otro.
- * Usar en: Home y en la página principal de cada sección.
+ * Muestra los sponsors en video uno junto al otro.
+ * Usar en: Home (debajo de Noticias Destacadas) y páginas de sección.
+ * Con carga diferida: los videos solo se montan al acercarse al viewport.
  */
 export function SponsorVideoDuo({ className = '' }) {
   return (
     <div className={`mb-6 ${className}`}>
-      <p className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5 px-0.5">
-        Espacio publicitario
-      </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {SPONSOR_VIDEOS.map((sponsor) => (
           <SponsorVideo key={sponsor.id} sponsor={sponsor} heightClass="h-20 sm:h-24" />
@@ -89,21 +128,29 @@ export function SponsorVideoDuo({ className = '' }) {
 }
 
 /**
- * Muestra UN sponsor en video, alternando entre los dos según "seed"
- * (usar el id de la nota para que cada nota alterne de forma estable).
- * Usar en: dentro de cada nota particular, debajo de la foto y antes del título.
+ * Muestra UN sponsor en video con ROTACIÓN SECUENCIAL:
+ * cuando el video actual termina arranca el siguiente; al llegar al último
+ * vuelve al primero (bucle). Funciona con cualquier cantidad de sponsors.
+ * El seed (id de la nota) solo define por cuál empieza, para variar entre notas.
+ * Usar en: dentro de cada nota, debajo de la foto y antes del título.
  */
 export function SponsorVideoSingle({ seed, className = '' }) {
   const numericSeed = parseInt(String(seed).replace(/\D/g, ''), 10);
-  const index = Number.isFinite(numericSeed) ? numericSeed % SPONSOR_VIDEOS.length : 0;
+  const [index, setIndex] = useState(() =>
+    Number.isFinite(numericSeed) ? numericSeed % SPONSOR_VIDEOS.length : 0
+  );
+
   const sponsor = SPONSOR_VIDEOS[index];
+  const handleEnded = () => setIndex((i) => (i + 1) % SPONSOR_VIDEOS.length);
 
   return (
     <div className={`my-5 max-w-sm ${className}`}>
-      <p className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5 px-0.5">
-        Espacio publicitario
-      </p>
-      <SponsorVideo sponsor={sponsor} heightClass="h-16 sm:h-20" />
+      <SponsorVideo
+        sponsor={sponsor}
+        heightClass="h-16 sm:h-20"
+        loop={false}
+        onEnded={handleEnded}
+      />
     </div>
   );
 }
