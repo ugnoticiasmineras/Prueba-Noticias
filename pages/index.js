@@ -302,9 +302,6 @@ export default function Home({ allNews, sidebarNews, currentDate }) {
         <meta name="facebook-domain-verification" content="wr93115y6b6xa1s1vi3ukgijy7wwcw" />
       </Head>
 
-      {/* ✅ SPONSORS EN VIDEO (NUEVO) - AOMA + Sponsor 2, siempre juntos */}
-      <SponsorVideoDuo />
-
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-4">
           {featuredNews.length > 0 && (
@@ -321,16 +318,8 @@ export default function Home({ allNews, sidebarNews, currentDate }) {
             </div>
           )}
 
-          {/* 👇 6 SPONSORS ENTRE NOTICIAS DESTACADAS Y ÚLTIMAS NOTICIAS (CORREGIDO) */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-blue-100 dark:border-blue-900">
-              <div className="h-16 flex items-center justify-center p-1">
-                <img 
-                  src="/sponsors/sponsor1.webp" 
-                  alt="Colaborador 1" 
-                  className="max-h-full max-w-full object-contain"
-                />
-              </div>
+                {/* 👇 SPONSORS EN VIDEO: reemplazan los logos placeholder, con carga diferida */}
+      <SponsorVideoDuo />
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-blue-100 dark:border-blue-900">
               <div className="h-16 flex items-center justify-center p-1">
