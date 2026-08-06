@@ -3,8 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 /**
  * ✅ SPONSORS EN VIDEO
  * Fuente única de verdad para los sponsors en video.
- * Para agregar/reemplazar un sponsor: cambiar el archivo en /public/sponsors/
- * manteniendo el mismo nombre, o agregar entradas a SPONSOR_VIDEOS.
+ * Para agregar un sponsor nuevo: agregar una entrada a SPONSOR_VIDEOS.
  * La rotación secuencial funciona con cualquier cantidad de sponsors:
  * cuando un video termina arranca el siguiente y al llegar al último vuelve al primero.
  */
@@ -113,7 +112,6 @@ function SponsorVideo({ sponsor, heightClass, loop = true, onEnded }) {
 /**
  * Muestra los sponsors en video uno junto al otro.
  * Usar en: Home (debajo de Noticias Destacadas) y páginas de sección.
- * Con carga diferida: los videos solo se montan al acercarse al viewport.
  */
 export function SponsorVideoDuo({ className = '' }) {
   return (
@@ -128,26 +126,26 @@ export function SponsorVideoDuo({ className = '' }) {
 }
 
 /**
- * Muestra UN sponsor en video con ROTACIÓN SECUENCIAL:
- * cuando el video actual termina arranca el siguiente; al llegar al último
- * vuelve al primero (bucle). Funciona con cualquier cantidad de sponsors.
- * El seed (id de la nota) solo define por cuál empieza, para variar entre notas.
- * Usar en: dentro de cada nota, debajo de la foto y antes del título.
+ * Muestra UN sponsor en video con ROTACIÓN SECUENCIAL (bucle).
+ * - seed (id de la nota) define por cuál empieza.
+ * - offset desfasa una segunda instancia: arriba empieza por un sponsor
+ *   y abajo por el siguiente, para que no se vea el mismo a la vez.
+ * - Ocupa TODO el ancho disponible (se estira en PC).
+ * Funciona con cualquier cantidad de sponsors en SPONSOR_VIDEOS.
  */
-export function SponsorVideoSingle({ seed, className = '' }) {
+export function SponsorVideoSingle({ seed, offset = 0, className = '' }) {
   const numericSeed = parseInt(String(seed).replace(/\D/g, ''), 10);
-  const [index, setIndex] = useState(() =>
-    Number.isFinite(numericSeed) ? numericSeed % SPONSOR_VIDEOS.length : 0
-  );
+  const base = Number.isFinite(numericSeed) ? numericSeed : 0;
+  const [index, setIndex] = useState(() => (base + offset) % SPONSOR_VIDEOS.length);
 
   const sponsor = SPONSOR_VIDEOS[index];
   const handleEnded = () => setIndex((i) => (i + 1) % SPONSOR_VIDEOS.length);
 
   return (
-    <div className={`my-5 max-w-sm ${className}`}>
+    <div className={`my-6 w-full ${className}`}>
       <SponsorVideo
         sponsor={sponsor}
-        heightClass="h-16 sm:h-20"
+        heightClass="h-20 sm:h-24 md:h-28"
         loop={false}
         onEnded={handleEnded}
       />
