@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../../components/Layout';
 import CotizacionesWidget from '../../../components/CotizacionesWidget';
+import { SponsorVideoSingle } from '../../../components/SponsorVideoBanner';
 
 const SITE_URL = 'https://ugnoticiasmineras.com';
 const WORDPRESS_API_URL = 'https://public-api.wordpress.com/wp/v2/sites/xtianaguilar79-hbsty.wordpress.com';
@@ -302,6 +303,9 @@ export default function NoticiaPage({ noticia, sidebarNews, currentDate }) {
                     </div>
                   )}
                   <div className="p-6">
+                    {/* ✅ SPONSOR EN VIDEO (NUEVO) - alterna entre AOMA y Sponsor 2 según la nota */}
+                    <SponsorVideoSingle seed={id} />
+
                     <h3 className="font-bold text-2xl text-blue-900 dark:text-blue-100 mb-4">{noticia.title}</h3>
                     {noticia.subtitle && <p className="text-blue-700 dark:text-blue-300 font-medium mb-4">{noticia.subtitle}</p>}
                     

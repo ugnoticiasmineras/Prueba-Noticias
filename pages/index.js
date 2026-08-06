@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import CotizacionesWidget from '../components/CotizacionesWidget';
+import { SponsorVideoDuo } from '../components/SponsorVideoBanner';
 
 const SITE_URL = 'https://ugnoticiasmineras.com';
 const WORDPRESS_API_URL = 'https://public-api.wordpress.com/wp/v2/sites/xtianaguilar79-hbsty.wordpress.com';
@@ -300,6 +301,9 @@ export default function Home({ allNews, sidebarNews, currentDate }) {
         <link rel="canonical" href={SITE_URL} />
         <meta name="facebook-domain-verification" content="wr93115y6b6xa1s1vi3ukgijy7wwcw" />
       </Head>
+
+      {/* ✅ SPONSORS EN VIDEO (NUEVO) - AOMA + Sponsor 2, siempre juntos */}
+      <SponsorVideoDuo />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-4">
