@@ -342,8 +342,11 @@ export default function NoticiaPage({ noticia, sidebarNews, currentDate }) {
                       ))}
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-blue-100 dark:border-blue-900">
-                      <p className="text-blue-800 dark:text-blue-200 font-medium">{noticia.source}</p>
+                                    {/* ✅ SPONSOR EN VIDEO (ROTATIVO) - al pie de la nota, desfasado respecto del de arriba */}
+                <SponsorVideoSingle seed={id} offset={1} />
+
+                <div className="mt-6 pt-4 border-t border-blue-100 dark:border-blue-900">
+                  <p className="text-blue-800 dark:text-blue-200 font-medium">{noticia.source}</p>
                       <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Publicado: {noticia.date}</p>
                     </div>
                     <div className="mt-6 pt-4 border-t border-blue-200 dark:border-blue-900 flex justify-center space-x-4">
