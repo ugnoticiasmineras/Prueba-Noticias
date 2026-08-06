@@ -126,9 +126,10 @@ const getCategoryLabel = (categoryKey) => {
   }
 };
 
-const shareOnWhatsApp = () => {
-  const url = encodeURIComponent(`${SITE_URL}/noticia/${cat}/${id}`);
-  window.open(`https://wa.me/?text=${url}`, '_blank');
+const shareOnWhatsApp = (news) => {
+  const url = encodeURIComponent(`${SITE_URL}/noticia/${news.categoryKey}/${news.id}`);
+  const title = encodeURIComponent(news.title);
+  window.open(`https://wa.me/?text=${title}%20${url}`, '_blank');
 };
 
 const shareOnFacebook = (news) => {
