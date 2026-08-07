@@ -308,6 +308,9 @@ export default function Home({ allNews, sidebarNews, currentDate }) {
         {lcpImage && <link rel="preload" as="image" href={lcpImage} fetchpriority="high" />}
       </Head>
 
+      {/* ✅ H1 oculto para accesibilidad/SEO (no cambia el diseño) */}
+      <h1 className="sr-only">UG Noticias Mineras – Información del sector minero argentino</h1>
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-4">
           {featuredNews.length > 0 && (
