@@ -26,11 +26,19 @@ const placeholderSponsors = [1, 2, 3, 4, 5, 6];
 const cleanText = (text) => {
   if (!text) return text;
   return text
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&#160;/gi, ' ')
     .replace(/\u00A0/g, ' ')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&#8211;/g, '-')
+    .replace(/&#8212;/g, '--')
     .replace(/’/g, "'")
     .replace(/“/g, '"')
     .replace(/”/g, '"')
