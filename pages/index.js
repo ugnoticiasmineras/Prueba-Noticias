@@ -54,14 +54,13 @@ const forceHttps = (url) => {
   return url.trim().replace(/^http:/, 'https:');
 };
 
-// ✅ FASE 2: pide a WordPress la imagen ya redimensionada (pesa mucho menos)
-// Solo aplica a imágenes de WordPress.com / wp.com; cualquier otra URL queda intacta.
+// ✅ FASE 2: imagen redimensionada y comprimida del CDN de WordPress
 const optimizedImage = (url, w = 720) => {
   if (!url) return url;
   if (!/(wordpress\.com|wp\.com)/.test(url)) return url;
   if (/[?&]w=/.test(url)) return url;
   const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}w=${w}`;
+  return `${url}${sep}w=${w}&quality=70`;
 };
 
 const processPost = (post) => {
@@ -116,9 +115,9 @@ const processPost = (post) => {
     image: imageUrl,
     categoryKey,
     categoryColor: categoryKey === 'nacionales' ? 'bg-blue-600' :
-      categoryKey === 'sanjuan' ? 'bg-red-500' :
-      categoryKey === 'sindicales' ? 'bg-green-600' :
-      categoryKey === 'internacionales' ? 'bg-yellow-600' : 'bg-purple-600',
+      categoryKey === 'sanjuan' ? 'bg-red-700' :
+      categoryKey === 'sindicales' ? 'bg-green-700' :
+      categoryKey === 'internacionales' ? 'bg-yellow-700' : 'bg-purple-600',
     source,
     date: formattedDate,
     originalDate: post.date,
@@ -146,22 +145,6 @@ const getCategoryLabel = (categoryKey) => {
     case 'opinion': return 'OPINIÓN';
     default: return 'NOTICIA';
   }
-};
-
-const shareOnWhatsApp = (news) => {
-  const url = encodeURIComponent(`${SITE_URL}/noticia/${news.categoryKey}/${news.id}`);
-  const title = encodeURIComponent(news.title);
-  window.open(`https://wa.me/?text=${title}%20${url}`, '_blank');
-};
-
-const shareOnFacebook = (news) => {
-  const url = encodeURIComponent(`${SITE_URL}/noticia/${news.categoryKey}/${news.id}`);
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-};
-
-const shareOnLinkedIn = (news) => {
-  const url = encodeURIComponent(`${SITE_URL}/noticia/${news.categoryKey}/${news.id}`);
-  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=400');
 };
 
 const renderFeaturedCard = ({ news, isLcp = false }) => {
@@ -203,7 +186,7 @@ const renderFeaturedCard = ({ news, isLcp = false }) => {
   );
 };
 
-const renderNewsCard = ({ news, basePath }) => {
+const renderNewsCard = ({ news }) => {
   if (!news.categoryKey) return null;
   return (
     <Link key={news.id} href={`/noticia/${news.categoryKey}/${news.id}`} legacyBehavior>
@@ -236,30 +219,6 @@ const renderNewsCard = ({ news, basePath }) => {
         </div>
       </a>
     </Link>
-  );
-};
-
-const renderSidebarCategoryCard = ({ categoryName, categoryKey, latestNews }) => {
-  return (
-    <div key={categoryKey} className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-blue-100 dark:border-blue-900 overflow-hidden mb-4">
-      <Link href={categoryKey.startsWith('/') ? categoryKey : `/noticia/${categoryKey}`} legacyBehavior>
-        <a className="block">
-          <div className="bg-gradient-to-r from-blue-900 to-blue-700 p-3 text-center">
-            <h3 className="text-lg font-bold text-white">{categoryName}</h3>
-            <div className="w-16 h-1 bg-red-500 mx-auto mt-1"></div>
-          </div>
-          <div className="p-2 h-24 bg-white dark:bg-gray-800 flex items-center justify-center">
-            {latestNews ? (
-              <p className="text-gray-800 dark:text-gray-200 text-center text-sm font-medium px-1">
-                {latestNews.title}
-              </p>
-            ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-center text-sm">Sin noticias</p>
-            )}
-          </div>
-        </a>
-      </Link>
-    </div>
   );
 };
 
@@ -356,7 +315,7 @@ export default function Home({ allNews, sidebarNews, currentDate }) {
             </div>
             <div className="p-6">
               <div className="space-y-6">
-                {paginatedNews.map(news => news.categoryKey && renderNewsCard({ news, basePath: '' }))}
+                {paginatedNews.map(news => news.categoryKey && renderNewsCard({ news }))}
               </div>
               {totalPages > 1 && (
                 <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 flex justify-center items-center space-x-2 mt-6 flex-wrap">
