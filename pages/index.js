@@ -154,21 +154,26 @@ const renderFeaturedCard = ({ news, isLcp = false }) => {
       <a className="block bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-blue-100 dark:border-blue-900 overflow-hidden">
         <div className="h-48 w-full relative">
           <img
-            src={news.image}
-            alt={news.title}
-            className="w-full h-full object-cover"
-            loading={isLcp ? 'eager' : 'lazy'}
-            decoding="async"
-            {...(isLcp && {
-              fetchpriority: "high",
-              width: 600,
-              height: 315
-            })}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.parentNode.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-blue-300 to-blue-400 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center"><div class="text-blue-800 dark:text-blue-200 font-bold text-center p-2">${news.title}</div></div>`;
-            }}
-          />
+  src={news.image}
+  srcSet={
+    news.image
+      ? `${optimizedImage(news.image, 360)} 360w,
+           ${optimizedImage(news.image, 720)} 720w,
+           ${optimizedImage(news.image, 1024)} 1024w`
+      : undefined
+  }
+  sizes="(max-width: 600px) 100vw, 720px"
+  alt={news.title}
+  className="w-full h-full object-cover"
+  loading={isLcp ? 'eager' : 'lazy'}
+  decoding="async"
+  {...(isLcp && {
+    fetchpriority: "high",
+    width: 600,
+    height: 315
+  })}
+  onError={...}
+/>
           <div className={`absolute top-2 left-2 ${news.categoryColor} text-white px-2 py-1 rounded text-xs font-semibold`}>
             {getCategoryLabel(news.categoryKey)}
           </div>
